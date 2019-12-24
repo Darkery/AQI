@@ -4,4 +4,5 @@
 echo "Docker container has been started"
 
 crontab /project/crontabfile
-cron -f
+
+service cron start
