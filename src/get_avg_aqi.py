@@ -2,18 +2,29 @@ import requests
 import json
 import smtplib
 from email.mime.text import MIMEText
+import time
 
 if __name__ == '__main__':
 
     url = 'http://www.pm25.in/api/querys/only_aqi.json?city=xian&token=5j1znBVAsnSf5xQyNQyq'
+    RETRY = int(6)
 
-    try:
-        respose = requests.get(url, verify=False)
-    except :
-        print('Get AQI info failed!')
-
-    if respose.status_code != 200:
-        raise Exception('Reture Code != 200.')
+    result = 999
+    for retry_count in range(RETRY):
+        if result == 200:
+            break
+        if retry_count >= RETRY:
+            print('Get AQI info failed! Out of retry times')
+            exit(1)
+        else:
+            try:
+                retry_count = retry_count + 1
+                respose = requests.get(url, verify=False)
+                result =  respose.status_code
+                print("Status Code: " + result)
+            except :
+                print('Get Failed. Retry Time: ' + str(retry_count))
+                continue
 
     aqi_list = json.loads(respose.text)
     # print(json.dumps(respose.text))
@@ -50,14 +61,21 @@ if __name__ == '__main__':
     print('message:\n' + message.as_string())
 
     # send email
-    try:
-        smtpObj = smtplib.SMTP()
-        smtpObj.connect(mail_host, 25)
-        smtpObj.login(mail_user, mail_password)
-        smtpObj.sendmail(
-            sender, receivers, message.as_string())
-        smtpObj.quit()
-        print('Email Send Success!')
-    except smtplib.SMTPException as e:
-        print('Error', e)
-        exit(1)
+    for retry_count in range(RETRY):
+        if retry_count >= RETRY:
+            exit(1)
+        try:
+            retry_count = retry_count + 1
+            smtpObj = smtplib.SMTP()
+            smtpObj.connect(mail_host, 25)
+            smtpObj.login(mail_user, mail_password)
+            smtpObj.sendmail(
+                sender, receivers, message.as_string())
+            smtpObj.quit()
+            print('Email Send Successfully!')
+        except smtplib.SMTPException as e:
+            print('Error', e)
+            print('Email Send Unsuccessfully! Try Again!')
+            print('Retry Time: ' + str(retry_count))
+            time.sleep(30)
+            continue
