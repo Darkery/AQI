@@ -1,13 +1,19 @@
-FROM ubuntu:16.04
+FROM python:3.7-alpine
 RUN mkdir /project
 WORKDIR /project
 
 # Install cron
-RUN apt-get update && apt-get install -y cron
-RUN apt-get install -y vim
+RUN apk update && apk add \
+        bash \
+        vim \
+    && pip install --no-cache-dir python-ldap requests \
+    && rm -rf /tmp/*
 
-COPY . /project/
 
-RUN chmod +x /project/*.sh
+COPY entrypoint.sh /project/
+COPY get_avg_aqi.py /project/
+COPY config.json /project/
 
-ENTRYPOINT /project/entrypoint.sh
+RUN chmod +x /project/*
+
+ENTRYPOINT /bin/bash

@@ -33,7 +33,7 @@ if __name__ == '__main__':
     print('avg_result' + aqi_content)
 
     # read email config
-    config = json.load(open('src/config.json', 'r'))
+    config = json.load(open('config.json', 'r'))
     mail_host = config['mail_host']
     mail_user = config['mail_user']
     mail_password = config['mail_password']
@@ -60,3 +60,4 @@ if __name__ == '__main__':
         print('Email Send Success!')
     except smtplib.SMTPException as e:
         print('Error', e)
+        exit(1)
