@@ -3,14 +3,23 @@ RUN mkdir /project
 WORKDIR /project
 
 # Install cron
-RUN apk update && apk add \
+   RUN apk update && apk add \
         bash \
-        vim \
+        libldap \
+        gcc \
+        libc-dev \
+        python-dev \
+        openldap-dev \
     && pip install --no-cache-dir python-ldap requests \
+    && apk del \
+        gcc \
+        libc-dev \
+        python-dev \
+        openldap-dev \
     && rm -rf /tmp/*
 
 
-COPY entrypoint.sh /project/
+COPY report_aqi.sh /project/
 COPY get_avg_aqi.py /project/
 COPY config.json /project/
 
