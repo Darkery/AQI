@@ -16,15 +16,14 @@ if __name__ == '__main__':
         if retry_count >= RETRY:
             print('Get AQI info failed! Out of retry times')
             exit(1)
-        else:
-            try:
-                retry_count = retry_count + 1
-                respose = requests.get(url, verify=False)
-                result =  respose.status_code
-                print("Status Code: " + result)
-            except :
-                print('Get Failed. Retry Time: ' + str(retry_count))
-                continue
+        try:
+            retry_count = retry_count + 1
+            respose = requests.get(url, verify=False)
+            result =  respose.status_code
+            print("Status Code: " + str(result))
+        except:
+            print('Get AQI failed. Retry Time: ' + str(retry_count))
+            time.sleep(10)
 
     aqi_list = json.loads(respose.text)
     # print(json.dumps(respose.text))
@@ -63,9 +62,9 @@ if __name__ == '__main__':
     # send email
     for retry_count in range(RETRY):
         if retry_count >= RETRY:
+            print('Email Send failed! Out of retry times')
             exit(1)
         try:
-            retry_count = retry_count + 1
             smtpObj = smtplib.SMTP()
             smtpObj.connect(mail_host, 25)
             smtpObj.login(mail_user, mail_password)
@@ -73,9 +72,8 @@ if __name__ == '__main__':
                 sender, receivers, message.as_string())
             smtpObj.quit()
             print('Email Send Successfully!')
-        except smtplib.SMTPException as e:
-            print('Error', e)
-            print('Email Send Unsuccessfully! Try Again!')
+            break
+        except:
+            print('Email Send failed! Try Again!')
             print('Retry Time: ' + str(retry_count))
-            time.sleep(30)
-            continue
+            time.sleep(10)
