@@ -30,7 +30,7 @@ if __name__ == '__main__':
         aqi_title = "Work from Home Day! [AQI: " + str(avg_aqi) + "]"
     else:
         aqi_title = "Need to Go to Work! [AQI: " + str(avg_aqi) + "]"
-    print('avg_result' + aqi_content)
+    print('avg_result: ' + aqi_content)
 
     # read email config
     config = json.load(open('config.json', 'r'))
