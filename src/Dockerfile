@@ -21,7 +21,6 @@ WORKDIR /project
 
 COPY report_aqi.sh /project/
 COPY get_avg_aqi.py /project/
-COPY config.json /project/
 
 RUN chmod +x /project/*
 
